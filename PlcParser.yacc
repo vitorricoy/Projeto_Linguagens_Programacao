@@ -13,12 +13,12 @@
 
 
 %term VAR | FUN | REC | NAME of String | COLON | SEMICOLON | IF |
-    THEN | ELSE | MATCH | WITH | NOT | INVERSE | HD | TL |
+    THEN | ELSE | MATCH | WITH | NOT | HD | TL |
     ISE | PRINT | AND | LPAR | RPAR | RBRACK | LBRACK | 
     RBRACE | LBRACE | PLUS | MINUS | TIMES | DIV | EQUAL | 
     DIFF | LESS | LESSEQ | DOUBLECOLON | NAT of int | 
     CONST of int | FN | ARROW | END | TRUE | FALSE | COMMA |
-    PIPE | UNDER | NIL | BOOL | INT | EOF
+    PIPE | UNDER | NIL | BOOL | INT | EOF | EQARROW
 
 %right SEMICOLON
 %nonassoc IF
@@ -51,7 +51,7 @@ Expr : AtomExpr |
        IF Expr THEN Expr ELSE Expr |
        MATCH Expr WITH Matchexpr |
        NOT Expr |
-       INVERSE Expr |
+       MINUS Expr |
        HD Expr |
        TL Expr |
        ISE Expr | 
@@ -74,7 +74,7 @@ AtomExpr: Const |
           LBRACE Prog RBRACE |
           RPAR Expr LPAR |
           RPAR Comps LPAR |
-          FN Args ARROW Expr END
+          FN Args EQARROW Expr END
 
 AppExpr : AtomExpr AtomExpr |
           AppExpr AtomExpr
