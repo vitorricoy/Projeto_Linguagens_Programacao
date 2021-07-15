@@ -5,7 +5,7 @@
 %pos int
 
 %nonterm Prog of expr | Decl of expr | Expr of expr | 
-    AtomExpr of expr | AppExpr of expr | Const of expr |
+    Atomexpr of expr | Appexpr of expr | Const of expr |
     Comps of expr list | Matchexpr of (expr option * expr) list | 
     Condexpr of expr option | Args of (pclType*String) list | 
     Params of (pclType*String) list | Typedvar of (pclType*string) |
@@ -40,77 +40,77 @@
 
 %%
 
-Prog : Expr | Decl SEMICOLON Prog
+Prog : Expr (Expr) | Decl (Decl) SEMICOLON Prog
 
 Decl : VAR NAME EQUAL Expr |
        FUN NAME Args EQUAL Expr |
        FUN REC NAME Args COLON Type EQUAL Expr
 
-Expr : AtomExpr |
-       AppExpr |
-       IF Expr THEN Expr ELSE Expr |
-       MATCH Expr WITH Matchexpr |
-       NOT Expr |
-       MINUS Expr |
-       HD Expr |
-       TL Expr |
-       ISE Expr | 
-       PRINT Expr |
-       Expr AND Expr |
-       Expr PLUS Expr |
-       Expr MINUS Expr |
-       Expr TIMES Expr |
-       Expr DIV Expr |
-       Expr EQUAL Expr |
-       Expr DIFF Expr |
-       Expr LESS Expr |
-       Expr LESSEQ Expr |
-       Expr DOUBLECOLON Expr |
-       Expr COLON Expr |
-       Expr LBRACK NAT RBRACK
+Expr : Atomexpr (Atomexpr) |
+       Appexpr (Appexpr) |
+       IF Expr THEN Expr ELSE Expr (If(Expr1, Expr2, Expr3)) |
+       MATCH Expr WITH Matchexpr(Match(Expr, Matchexpr)) |
+       NOT Expr (Prim1("!", Expr)) |
+       MINUS Expr (Prim1("-", Expr)) |
+       HD Expr (Prim1("hd", Expr)) |
+       TL Expr (Prim1("tl", Expr)) |
+       ISE Expr (Prim1("ise", Expr)) | 
+       PRINT Expr (Prim1("print", Expr)) |
+       Expr AND Expr (Prim2("&&", Expr1, Expr2)) |
+       Expr PLUS Expr (Prim2("+", Expr1, Expr2)) |
+       Expr MINUS Expr (Prim2("-", Expr1, Expr2)) |
+       Expr TIMES Expr (Prim2("*", Expr1, Expr2)) |
+       Expr DIV Expr (Prim2("/", Expr1, Expr2)) |
+       Expr EQUAL Expr (Prim2("=", Expr1, Expr2)) |
+       Expr DIFF Expr (Prim2("!=", Expr1, Expr2)) |
+       Expr LESS Expr (Prim2("<", Expr1, Expr2)) |
+       Expr LESSEQ Expr (Prim2("<=", Expr1, Expr2)) |
+       Expr DOUBLECOLON Expr (Prim2("::", Expr1, Expr2)) |
+       Expr COLON Expr | (Prim2(";", Expr1, Expr2)) |
+       Expr LBRACK NAT RBRACK (Item(NAT, Expr))
 
-AtomExpr: Const |
-          NAME |
-          LBRACE Prog RBRACE |
-          RPAR Expr LPAR |
-          RPAR Comps LPAR |
-          FN Args EQARROW Expr END
+Atomexpr: Const (Const) |
+          NAME (Var(NAME)) |
+          LBRACE Prog RBRACE (Prog) |
+          RPAR Expr LPAR (Expr) |
+          RPAR Comps LPAR (List(Comps)) |
+          FN Args EQARROW Expr END (makeAnon(Args, Expr))
 
-AppExpr : AtomExpr AtomExpr |
-          AppExpr AtomExpr
+Appexpr : Atomexpr Atomexpr (Call(Atomexpr, Atomexpr)) |
+          Appexpr Atomexpr (Call(Appexpr, Atomexpr))
 
-Const : TRUE |
-        FALSE |
-        NAT |
-        LPAR RPAR |
-        LPAR Type LBRACK RBRACK RPAR |
+Const : TRUE (ConB(true)) |
+        FALSE (ConB(false)) |
+        NAT (ConI(NAT)) |
+        LPAR RPAR (List[]) |
+        LPAR Type LBRACK RBRACK RPAR (ESeq(SeqT(Type))) |
 
-Comps : Expr COMMA Expr |
-        Expr COMMA Comps
+Comps : Expr COMMA Expr (Expr; Expr) |
+        Expr COMMA Comps (Expr; Comps)
 
-Matchexpr : END |
-            PIPE Condexpr ARROW Expr Matchexpr
+Matchexpr : END | ([])
+            PIPE Condexpr ARROW Expr Matchexpr ((Condexpr, Expr)::Matchexpr)
 
-Condexpr : Expr |
-           UNDER
+Condexpr : Expr | (SOME Expr)
+           UNDER (NONE)
 
-Args : LPAR RPAR |
-       LPAR Params RPAR
+Args : LPAR RPAR ([]) |
+       LPAR Params RPAR (Params)
 
-Params : Typedvar |
-         Typedvar COMMA Params
+Params : Typedvar (Typedvar::[]) |
+         Typedvar COMMA Params (Typedvar::Params)
 
-Typedvar : Type NAME
+Typedvar : Type NAME (Type, NAME)
 
-Type : Atomtype | 
-       LPAR Types RPAR |
-       LBRACK Type RBRACK |
-       Type ARROW Type
+Type : Atomtype (Atomtype) | 
+       LPAR Types RPAR (ListT(Types)) |
+       LBRACK Type RBRACK (SeqT(Type)) |
+       Type ARROW Type (FunT(Type1, Type2))
 
-Atomtype : NIL |
-           BOOL |
-           INT |
-           LPAR Type RPAR
+Atomtype : NIL (ListT[]) |
+           BOOL (BooT) |
+           INT (IntT) |
+           LPAR Type RPAR (Type)
 
-Types : Type COMMA Type |
-        Type COMMA Types
+Types : Type COMMA Type (Type1::Type2::[]) |
+        Type COMMA Types (Type::Types)
