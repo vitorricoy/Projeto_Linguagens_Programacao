@@ -7,25 +7,25 @@
 %nonterm Prog of expr | Decl of expr | Expr of expr | 
     Atomexpr of expr | Appexpr of expr | Const of expr |
     Comps of expr list | Matchexpr of (expr option * expr) list | 
-    Condexpr of expr option | Args of (pclType*String) list | 
-    Params of (pclType*String) list | Typedvar of (pclType*string) |
-    Type of pclType | Atomtype of plcType | Types of pclType list
+    Condexpr of expr option | Args of (plcType*string) list | 
+    Params of (plcType*string) list | Typedvar of (plcType*string) |
+    Type of plcType | Atomtype of plcType | Types of plcType list
 
 
-%term VAR | FUN | REC | NAME of String | COLON | SEMICOLON | IF |
+%term VAR | FUN | REC | NAME of string | COLON | SEMICOLON | IF |
     THEN | ELSE | MATCH | WITH | NOT | HD | TL |
     ISE | PRINT | AND | LPAR | RPAR | RBRACK | LBRACK | 
     RBRACE | LBRACE | PLUS | MINUS | TIMES | DIV | EQUAL | 
     DIFF | LESS | LESSEQ | DOUBLECOLON | NAT of int | 
-    CONST of int | FN | ARROW | END | TRUE | FALSE | COMMA |
+    FN | ARROW | END | TRUE | FALSE | COMMA |
     PIPE | UNDER | NIL | BOOL | INT | EOF | EQARROW
 
-%right SEMICOLON
+%right SEMICOLON ARROW
 %nonassoc IF
 %left ELSE
 %left AND
 %left EQUAL DIFF
-%left LESS EQLESS
+%left LESS LESSEQ
 %right DOUBLECOLON
 %left PLUS MINUS
 %left TIMES DIV
@@ -40,11 +40,12 @@
 
 %%
 
-Prog : Expr (Expr) | Decl (Decl) SEMICOLON Prog
+Prog : Expr (Expr) | 
+       Decl (Decl)
 
-Decl : VAR NAME EQUAL Expr |
-       FUN NAME Args EQUAL Expr |
-       FUN REC NAME Args COLON Type EQUAL Expr
+Decl : VAR NAME EQUAL Expr SEMICOLON Prog (Let(NAME, Expr, Prog)) |
+       FUN NAME Args EQUAL Expr SEMICOLON Prog (Let(NAME, makeAnon(Args, Expr), Prog)) |
+       FUN REC NAME Args COLON Type EQUAL Expr SEMICOLON Prog (makeFun(NAME, Args, Type, Expr, Prog))
 
 Expr : Atomexpr (Atomexpr) |
        Appexpr (Appexpr) |
@@ -66,32 +67,32 @@ Expr : Atomexpr (Atomexpr) |
        Expr LESS Expr (Prim2("<", Expr1, Expr2)) |
        Expr LESSEQ Expr (Prim2("<=", Expr1, Expr2)) |
        Expr DOUBLECOLON Expr (Prim2("::", Expr1, Expr2)) |
-       Expr COLON Expr | (Prim2(";", Expr1, Expr2)) |
+       Expr SEMICOLON Expr (Prim2(";", Expr1, Expr2)) |
        Expr LBRACK NAT RBRACK (Item(NAT, Expr))
 
 Atomexpr: Const (Const) |
           NAME (Var(NAME)) |
           LBRACE Prog RBRACE (Prog) |
-          RPAR Expr LPAR (Expr) |
-          RPAR Comps LPAR (List(Comps)) |
+          LPAR Expr RPAR (Expr) |
+          LPAR Comps RPAR (List(Comps)) |
           FN Args EQARROW Expr END (makeAnon(Args, Expr))
 
-Appexpr : Atomexpr Atomexpr (Call(Atomexpr, Atomexpr)) |
+Appexpr : Atomexpr Atomexpr (Call(Atomexpr1, Atomexpr2)) |
           Appexpr Atomexpr (Call(Appexpr, Atomexpr))
 
 Const : TRUE (ConB(true)) |
         FALSE (ConB(false)) |
         NAT (ConI(NAT)) |
         LPAR RPAR (List[]) |
-        LPAR Type LBRACK RBRACK RPAR (ESeq(SeqT(Type))) |
+        LPAR Type LBRACK RBRACK RPAR (ESeq(SeqT(Type)))
 
-Comps : Expr COMMA Expr (Expr; Expr) |
-        Expr COMMA Comps (Expr; Comps)
+Comps : Expr COMMA Expr (Expr1::Expr2::[]) |
+        Expr COMMA Comps (Expr::Comps)
 
-Matchexpr : END | ([])
+Matchexpr : END ([]) |
             PIPE Condexpr ARROW Expr Matchexpr ((Condexpr, Expr)::Matchexpr)
 
-Condexpr : Expr | (SOME Expr)
+Condexpr : Expr (SOME Expr) |
            UNDER (NONE)
 
 Args : LPAR RPAR ([]) |
@@ -107,8 +108,8 @@ Type : Atomtype (Atomtype) |
        LBRACK Type RBRACK (SeqT(Type)) |
        Type ARROW Type (FunT(Type1, Type2))
 
-Atomtype : NIL (ListT[]) |
-           BOOL (BooT) |
+Atomtype : NIL (ListT([])) |
+           BOOL (BoolT) |
            INT (IntT) |
            LPAR Type RPAR (Type)
 

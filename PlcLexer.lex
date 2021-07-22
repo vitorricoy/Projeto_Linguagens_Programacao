@@ -57,14 +57,16 @@ fun init() = ()
 %%
 %header (functor PlcLexerFun(structure Tokens: PlcParser_TOKENS));
 digit = [0-9];
-whitespace = [\ \t]
-identifier = [a-zA-Z_][a-zA-Z_0-9]*
+whitespace = [\ \t];
+identifier = [a-zA-Z_][a-zA-Z_0-9]*;
+comentario = [\(\*(. | \n)* \*\)];
 %%
 
-\n => (lineNumber := !lineNumber+1; lex())
+\n => (lineNumber := !lineNumber+1; lex());
+{comentario}+ => (lineNumber := !lineNumber+1; lex());
 {whitespace}+ => (lex());
 {digit}+ => (NAT(strToInt(yytext), yypos, yypos));
-{identifier} => (keyword(yytext), yypos, yypos);
+{identifier} => (keyword(yytext, yypos, yypos));
 "!" => (NOT(yypos, yypos));
 "-" => (MINUS(yypos, yypos));
 "&&" => (AND(yypos, yypos));
@@ -90,3 +92,4 @@ identifier = [a-zA-Z_][a-zA-Z_0-9]*
 ":" => (COLON(yypos, yypos));
 . =>(error("\n***Erro de Lexer: caractere invalido *** \n"); 
      raise Fail ("Erro de Lexer: caractere invalido: " ^ yytext));
+
