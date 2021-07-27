@@ -838,7 +838,7 @@ end
 |  ( 39, ( ( _, ( _, _, RPAR1right)) :: _ :: _ :: ( _, ( MlyValue.Type
  Type1, _, _)) :: ( _, ( _, LPAR1left, _)) :: rest671)) => let val  
 result = MlyValue.Const (fn _ => let val  (Type as Type1) = Type1 ()
- in (ESeq(SeqT(Type)))
+ in (ESeq(Type))
 end)
  in ( LrTable.NT 5, ( result, LPAR1left, RPAR1right), rest671)
 end

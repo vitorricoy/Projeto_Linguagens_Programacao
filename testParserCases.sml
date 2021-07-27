@@ -1,3 +1,4 @@
+use "Environ.sml";
 use "Absyn.sml";
 
 val cases =

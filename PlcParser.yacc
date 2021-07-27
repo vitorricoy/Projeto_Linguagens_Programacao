@@ -4,14 +4,6 @@
 
 %pos int
 
-%nonterm Prog of expr | Decl of expr | Expr of expr | 
-    Atomexpr of expr | Appexpr of expr | Const of expr |
-    Comps of expr list | Matchexpr of (expr option * expr) list | 
-    Condexpr of expr option | Args of (plcType*string) list | 
-    Params of (plcType*string) list | Typedvar of (plcType*string) |
-    Type of plcType | Atomtype of plcType | Types of plcType list
-
-
 %term VAR | FUN | REC | NAME of string | COLON | SEMICOLON | IF |
     THEN | ELSE | MATCH | WITH | NOT | HD | TL |
     ISE | PRINT | AND | LPAR | RPAR | RBRACK | LBRACK | 
@@ -19,6 +11,13 @@
     DIFF | LESS | LESSEQ | DOUBLECOLON | NAT of int | 
     FN | ARROW | END | TRUE | FALSE | COMMA |
     PIPE | UNDER | NIL | BOOL | INT | EOF | EQARROW
+
+%nonterm Prog of expr | Decl of expr | Expr of expr | 
+    Atomexpr of expr | Appexpr of expr | Const of expr |
+    Comps of expr list | Matchexpr of (expr option * expr) list | 
+    Condexpr of expr option | Args of (plcType*string) list | 
+    Params of (plcType*string) list | Typedvar of (plcType*string) |
+    Type of plcType | Atomtype of plcType | Types of plcType list
 
 %right SEMICOLON ARROW
 %nonassoc IF
@@ -84,7 +83,7 @@ Const : TRUE (ConB(true)) |
         FALSE (ConB(false)) |
         NAT (ConI(NAT)) |
         LPAR RPAR (List[]) |
-        LPAR Type LBRACK RBRACK RPAR (ESeq(SeqT(Type)))
+        LPAR Type LBRACK RBRACK RPAR (ESeq(Type))
 
 Comps : Expr COMMA Expr (Expr1::Expr2::[]) |
         Expr COMMA Comps (Expr::Comps)
