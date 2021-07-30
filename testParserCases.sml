@@ -1,5 +1,6 @@
-use "Environ.sml";
-use "Absyn.sml";
+(* Esta linha não precisa estar aqui já que já importamos isso pelo testParser.sml *)
+(* Se descomentar isso o teste automatico no final deste arquivo vai falhar ao rodar "sml testParser.sml" *)
+(* use "Absyn.sml"; *)
 
 val cases =
   (
@@ -440,3 +441,39 @@ val cases =
         (s, e)
     end
   ) ];
+
+
+
+
+
+fun countTests (rows : (string * expr) list) =
+  case rows of
+    [h] => 1
+    |(h::t) => 1 + countTests(t);
+
+
+fun testAll (rows : (string * expr) list) =
+let
+  fun test(program : string, expected : expr) = 
+    if (fromString program) = expected then 1 else 0;
+in
+  case rows of
+      [h] => test(h)
+    | ((h:(string*expr))::t) => test(h) + testAll(t)
+    | [] => 0
+end;
+
+fun fails (rows : (string * expr) list, failed : string list) =
+let
+  fun test(program : string, expected : expr) = 
+    if (fromString program) = expected then 1 else 0;
+in
+  case rows of
+      [h:(string*expr)] => if test(h) = 1 then failed else #1h::failed
+    | ((h:(string*expr))::t) => if test(h) = 1 then fails(t, failed) else fails(t, #1h::failed) 
+    | [] => failed
+end;
+
+val passed_tests = testAll cases;
+val count_tests = countTests cases;
+val failed_tests = fails(cases, []);
