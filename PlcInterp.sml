@@ -63,6 +63,68 @@ fun eval (exp: expr) (state: plcVal env) : plcVal =
             in
               encontrarMatchExpr matchExpr valExpr state
             end
+      | Prim1("!", e) =>
+          let
+            val valExpr = eval e state
+          in
+            case valExpr of
+                BoolV(true) => BoolV(false)
+              | BoolV(false) => BoolV(true)
+              | _ => raise Impossible
+          end
+      | Prim1("-", e) =>
+          let
+            val valExpr = eval e state
+          in
+            case valExpr of
+                IntV(v) => -v
+              | _ => raise Impossible
+          end
+      | Prim1("hd", e) => 
+          let
+            val valExpr = eval e state
+          in
+            case valExpr of
+                ListV([]) => raise HDEmptySeq
+              | ListV(l) => hd l
+              | _ => raise Impossible
+          end
+      | Prim1("tl", e) =>
+          let
+            val valExpr = eval e state
+          in
+            case valExpr of
+                ListV([]) => raise TLEmptySeq
+              | ListV(l) => tl l
+              | _ => raise Impossible
+      | Prim1("ise", e) =>
+        
+      | Prim1("print", e) =>
+          
+      | Prim2("&&", e1, e2) =>
+         
+      | Prim2("::", e1, e2) =>
+          
+      | Prim2(operador, e1, e2) => 
+          let
+            val tipoE1 = teval e1 state
+            val tipoE2 = teval e2 state
+          in
+            (case operador of 
+              "+" => 
+             | "-" => 
+             | "*" => 
+             | "/" => 
+             | "<" => 
+             | "<=" => 
+             | "=" => 
+             | "!=" => 
+             | ";" => 
+             | _ => raise Impossible
+            )
+          end
+      | Item(ind, e) => 
+      | _ => raise Impossible
 (* Declara uma função para tratar os valores de uma lista *)
 and calcularValoresList ([]) (state: plcVal env) = []
   | calcularValoresList (h::t) (state: plcVal env) = (eval h state)::(calcularValoresList(t) (state))
