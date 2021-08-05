@@ -1,8 +1,5 @@
 (* PlcChecker *)
 
-use "Environ.sml";
-use "Absyn.sml";
-
 exception EmptySeq
 exception UnknownType
 exception NotEqTypes
