@@ -1,5 +1,7 @@
 (* Plc interpreter main file *)
 
+use "Environ.sml";
+use "Absyn.sml";
 use "PlcChecker.sml";
 use "PlcInterp.sml";
 
@@ -8,7 +10,7 @@ fun run e =
       val tipo = type2string(teval e [])
       val valor = val2string(eval e [])
     in
-      valor^":"^tipo
+      valor^": "^tipo
     end
     handle
         (* Exceções do Environ.sml *)
