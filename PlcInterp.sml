@@ -76,17 +76,15 @@ fun eval (exp: expr) (state: plcVal env) : plcVal =
           let
             val valExpr = eval e state
           in
-            case valExpr of
-                IntV(v) => -v
-              | _ => raise Impossible
+            IntV(~(obterInteiro valExpr))
           end
       | Prim1("hd", e) => 
           let
             val valExpr = eval e state
           in
             case valExpr of
-                ListV([]) => raise HDEmptySeq
-              | ListV(l) => hd l
+                SeqV([]) => raise HDEmptySeq
+              | SeqV(l) => hd l
               | _ => raise Impossible
           end
       | Prim1("tl", e) =>
@@ -94,36 +92,75 @@ fun eval (exp: expr) (state: plcVal env) : plcVal =
             val valExpr = eval e state
           in
             case valExpr of
-                ListV([]) => raise TLEmptySeq
-              | ListV(l) => tl l
+                SeqV([]) => raise TLEmptySeq
+              | SeqV(l) => SeqV(tl l)
               | _ => raise Impossible
+          end
       | Prim1("ise", e) =>
-        
-      | Prim1("print", e) =>
+          let
+            val lista = eval e state
+          in
+            case lista of
+                SeqV([]) => BoolV(true)
+              | SeqV(l) => BoolV(false)
+              | _ => raise Impossible
+          end        
+      | Prim1("print", e) => 
+          let
+            val valE = eval e state
+          in
+            (print(val2string(valE)^"\n"); ListV [])
+          end
           
       | Prim2("&&", e1, e2) =>
+        let
+          val valE1 = eval e1 state
+          val valE2 = eval e2 state
+        in
+          case valE1 of 
+              BoolV(b1) =>
+                (case valE2 of 
+                    BoolV(b2) => BoolV(b1 andalso b2)
+                  | _ => raise Impossible)
+            | _ => raise Impossible
+        end
          
       | Prim2("::", e1, e2) =>
+          let
+            val valE1 = eval e1 state
+            val valE2 = eval e2 state
+          in
+            case valE2 of
+                SeqV(l) => SeqV(valE1::l)
+              | _ => raise Impossible 
+          end
           
       | Prim2(operador, e1, e2) => 
           let
-            val tipoE1 = teval e1 state
-            val tipoE2 = teval e2 state
+            val valE1 = eval e1 state
+            val valE2 = eval e2 state
           in
             (case operador of 
-              "+" => 
-             | "-" => 
-             | "*" => 
-             | "/" => 
-             | "<" => 
-             | "<=" => 
-             | "=" => 
-             | "!=" => 
-             | ";" => 
+              "+" => IntV(obterInteiro valE1 + obterInteiro valE2)
+             | "-" => IntV(obterInteiro valE1 - obterInteiro valE2)
+             | "*" => IntV(obterInteiro valE1 * obterInteiro valE2)
+             | "/" => IntV(obterInteiro valE1 div obterInteiro valE2)
+             | "<" => BoolV(obterInteiro valE1 < obterInteiro valE2)
+             | "<=" => BoolV(obterInteiro valE1 <= obterInteiro valE2)
+             | "=" => BoolV(valE1 = valE2)
+             | "!=" => BoolV(not(valE1 = valE2))
+             | ";" => valE2
              | _ => raise Impossible
             )
           end
       | Item(ind, e) => 
+          let
+            val valE = eval e state
+          in
+            case valE of 
+                ListV(v) => (buscarItem ind v)
+              | _ => raise Impossible
+          end
       | _ => raise Impossible
 (* Declara uma função para tratar os valores de uma lista *)
 and calcularValoresList ([]) (state: plcVal env) = []
@@ -143,3 +180,16 @@ and encontrarMatchExpr [] valor (state: plcVal env) =
         end
   | encontrarMatchExpr ((NONE, res)::t) valor (state: plcVal env) = 
         eval res state
+
+(* Declara uma função para converter o valor recebido para inteiro 
+   Gera uma excessão Impossible caso o valor recebido não possa ser
+   convertido                                                    *)
+and obterInteiro (IntV(v)):int = v
+  | obterInteiro _ = raise Impossible
+
+(* Declara uma função para buscar o i-ésimo item em uma sequência *)
+
+and buscarItem ind [] = raise Impossible
+  | buscarItem 1 (h::t) = h
+  | buscarItem ind (h::t) = buscarItem (ind-1) t;
+

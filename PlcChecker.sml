@@ -249,5 +249,5 @@ and verificarEqualityType(t) =
 (* Declara uma função para calcular o tipo do elemento com o índice dado na lista dada *)
 and calculaTipoAcessoSequencia(indice, []) = raise ListOutOfRange
   | calculaTipoAcessoSequencia(1, h::t) = h
-  | calculaTipoAcessoSequencia(indice, h::t) = calculaTipoAcessoSequencia(indice-1, t)
+  | calculaTipoAcessoSequencia(indice, h::t) = calculaTipoAcessoSequencia(indice-1, t);
     
