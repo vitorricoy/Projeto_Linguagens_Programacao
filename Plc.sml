@@ -12,24 +12,24 @@ fun run e =
     end
     handle
         (* Exceções do Environ.sml *)
-          SymbolNotFound => "Variável não definida."
+          SymbolNotFound => "Variavel nao definida."
         (* Exceções do PlcChecker.sml *)
-        | EmptySeq => "A sequência não possui elementos."
-        | UnknownType => "Tipo inválido utilizado."
-        | NotEqTypes => "Tipos diferentes usados na comparação."
-        | WrongRetType => "O tipo de retorno da função não condiz com o seu corpo."
-        | DiffBrTypes => "Os tipos das expressões dos possíveis caminhos da condição são diferentes."
-        | IfCondNotBool => "Condicional possui uma condição não booleana."
-        | NoMatchResults => "Não há resultados para a expressão match."
-        | MatchResTypeDiff => "O tipo de algum dos casos de uma expressão match difere dos demais."
-        | MatchCondTypesDiff => "O tipo das opções de match diferem do tipo da expressão passada para o match."
-        | CallTypeMisM => "A chamada da função recebe um tipo diferente do qual ela suporta."
-        | NotFunc => "A expressão chamada não é uma função."
+        | EmptySeq => "A sequência nao possui elementos."
+        | UnknownType => "Tipo invalido utilizado."
+        | NotEqTypes => "Tipos diferentes usados na comparacao."
+        | WrongRetType => "O tipo de retorno da funcao nao condiz com o seu corpo."
+        | DiffBrTypes => "Os tipos das expressoes dos possíveis caminhos da condicao sao diferentes."
+        | IfCondNotBool => "Condicional possui uma condicao nao booleana."
+        | NoMatchResults => "Nao ha resultados para a expressao match."
+        | MatchResTypeDiff => "O tipo de algum dos casos de uma expressao match difere dos demais."
+        | MatchCondTypesDiff => "O tipo das opcoes de match diferem do tipo da expressao passada para o match."
+        | CallTypeMisM => "A chamada da funcao recebe um tipo diferente do qual ela suporta."
+        | NotFunc => "A expressao chamada nao é uma funcao."
         | ListOutOfRange => "Tentativa de acessar um elemento fora dos limites da lista."
-        | OpNonList => "Tentativa de acessar um elemento de uma expressão que não é uma lista."
+        | OpNonList => "Tentativa de acessar um elemento de uma expressao que nao é uma lista."
         (* Exceções do PlcInterp.sml *)
-        | Impossible => "Erro ao avaliar a expressão."
+        | Impossible => "Erro ao avaliar a expressao."
         | HDEmptySeq => "hd foi utilizado em uma sequência vazia."
         | TLEmptySeq => "tl foi utilizado em uma sequência vazia."
-        | ValueNotFoundInMatch => "Valor da expressão não foi encontrado no match."
-        | NotAFunc => "Tentativa de usar como função uma expressão que não é uma função.";
+        | ValueNotFoundInMatch => "Valor da expressao nao foi encontrado no match."
+        | NotAFunc => "Tentativa de usar como funcao uma expressao que nao é uma funcao.";
