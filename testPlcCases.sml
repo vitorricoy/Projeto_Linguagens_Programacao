@@ -137,7 +137,7 @@ val cases =
    ) ::
    (
       let val s = "(1,(2,3),4)";
-          val e = "(1, (2, 3), 4, ) : (Int, (Int, Int), Int, )"
+          val e = "(1, (2, 3, ), 4, ) : (Int, (Int, Int, ), Int, )"
       in
          (s, e)
       end
@@ -242,7 +242,7 @@ val cases =
    ) ::
    (
       let val s = "(1,2) :: (3,4) :: ([(Int,Int)] [])";
-          val e = "[(1, 2), (3, 4), ] : [(Int, Int, )]"
+          val e = "[(1, 2, ), (3, 4, ), ] : [(Int, Int, )]"
       in
          (s, e)
       end
@@ -256,7 +256,7 @@ val cases =
    ) ::
    (
       let val s = "tl (1 :: 2 :: ([Int] []))";
-          val e = "[2] : [Int]"
+          val e = "[2, ] : [Int]"
       in
          (s, e)
       end
