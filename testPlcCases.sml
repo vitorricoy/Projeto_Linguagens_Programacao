@@ -130,7 +130,7 @@ val cases =
    ) ::
    (
       let val s = "(1,false,())";
-          val e = "(1alse, ()) : (Int, Bool, Nil)"
+          val e = "(1, false, ()) : (Int, Bool, Nil)"
       in
          (s, e)
       end
@@ -228,21 +228,21 @@ val cases =
    ) ::
    (
       let val s = "1 :: ([Int] [])";
-          val e = "[1] : [Int]"
+          val e = "[1, ] : [Int]"
       in
          (s, e)
       end
    ) ::
    (
       let val s = "1 :: 2 :: ([Int] [])";
-          val e = "[1, 2] : [Int]"
+          val e = "[1, 2, ] : [Int]"
       in
          (s, e)
       end
    ) ::
    (
       let val s = "(1,2) :: (3,4) :: ([(Int,Int)] [])";
-          val e = "[(1, 2), (3, 4)] : [(Int, Int)]"
+          val e = "[(1, 2), (3, 4), ] : [(Int, Int)]"
       in
          (s, e)
       end
@@ -312,7 +312,7 @@ val cases =
    ) ::
    (
       let val s = "var e = ([Bool] []); true::false::e";
-          val e = "[true, false] : [Bool]"
+          val e = "[true, false, ] : [Bool]"
       in
          (s, e)
       end
@@ -427,7 +427,7 @@ val cases =
    ) ::
    (
       let val s = "fun inc (Int x) = x + 1; fun add (Int x, Int y) = x + y; fun cadd (Int x) = fn (Int y) => x + y end; var y = add(3, inc(4)); var x = cadd(3)(7-y); var z = x * 3; fun rec fac (Int n) : Int = match n with | 0 -> 1 | 1 -> 1 | _ -> n * fac(n - 1) end; print x; print y; x :: y :: z :: fac(z) :: ([Int] [])";
-          val e = "[2, 8, 6, 720] : [Int]"
+          val e = "[2, 8, 6, 720, ] : [Int]"
       in
          (s, e)
       end
@@ -441,14 +441,14 @@ val cases =
    ) ::
    (
       let val s = "var E = ([Int] []); fun reverse ([Int] l) = { fun rec rev ([Int] l1, [Int] l2): [Int] = if ise(l1) then l2 else rev(tl(l1), hd(l1)::l2); rev(l, E) }; reverse (1::2::3::E)";
-          val e = "[3, 2, 1] : [Int]"
+          val e = "[3, 2, 1, ] : [Int]"
       in
          (s, e)
       end
    ) ::
    (
       let val s = "var E = ([Int] []); fun reverse ([Int] s) = { fun rec rev ([Int] s1, [Int] s2): [Int] = match s1 with | E -> s2 | _ -> { var h = hd(s1); var t = tl(s1); rev(t, h::s2) } end; rev(s, E) }; reverse (1::2::3::E)";
-          val e = "[3, 2, 1] : [Int]"
+          val e = "[3, 2, 1, ] : [Int]"
       in
          (s, e)
       end
@@ -456,7 +456,7 @@ val cases =
    [ (
       let val s =
       "fun rec map ((Int -> Int) f) : ([Int] -> [Int]) = fn ([Int] l) => if ise(l) then l else f(hd(l)) :: map(f)(tl(l)) end; map (fn (Int x) => 2*x end) (10::20::30::([Int] []))";
-          val e = "[20, 40, 60] : [Int]"
+          val e = "[20, 40, 60, ] : [Int]"
       in
          (s, e)
       end
