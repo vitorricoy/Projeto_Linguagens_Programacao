@@ -10,7 +10,7 @@ fun run e =
       val tipo = type2string(teval e [])
       val valor = val2string(eval e [])
     in
-      valor^": "^tipo
+      valor^" : "^tipo
     end
     handle
         (* Exceções do Environ.sml *)
