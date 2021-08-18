@@ -34,9 +34,9 @@ fun eval (exp: expr) (state: plcVal env) : plcVal =
             val valPar = eval par state
           in
             case closure of 
-                Clos(nomeFun, nomePar, corpoFun, state) =>
+                Clos(nomeFun, nomePar, corpoFun, stateFun) =>
                   let
-                    val novoEstado = (nomePar, valPar)::state
+                    val novoEstado = (nomePar, valPar)::(nomeFun, closure)::stateFun
                   in
                     eval corpoFun novoEstado
                   end
