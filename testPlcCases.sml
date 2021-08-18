@@ -130,14 +130,14 @@ val cases =
    ) ::
    (
       let val s = "(1,false,())";
-          val e = "(1, false, ()) : (Int, Bool, Nil)"
+          val e = "(1, false, (), ) : (Int, Bool, Nil, )"
       in
          (s, e)
       end
    ) ::
    (
       let val s = "(1,(2,3),4)";
-          val e = "(1, (2, 3), 4) : (Int, (Int, Int), Int)"
+          val e = "(1, (2, 3), 4, ) : (Int, (Int, Int), Int, )"
       in
          (s, e)
       end
@@ -221,7 +221,7 @@ val cases =
    ) ::
    (
       let val s = "([(Nil, Int, Bool)] [])";
-          val e = "[] : [(Nil, Int, Bool)]"
+          val e = "[] : [(Nil, Int, Bool, )]"
       in
          (s, e)
       end
@@ -242,7 +242,7 @@ val cases =
    ) ::
    (
       let val s = "(1,2) :: (3,4) :: ([(Int,Int)] [])";
-          val e = "[(1, 2), (3, 4), ] : [(Int, Int)]"
+          val e = "[(1, 2), (3, 4), ] : [(Int, Int, )]"
       in
          (s, e)
       end
@@ -392,7 +392,7 @@ val cases =
    ) ::
    (
       let val s = "fn (Int x, Int y) => x - y end";
-          val e = "<fun> : (Int, Int) -> Int"
+          val e = "<fun> : (Int, Int, ) -> Int"
       in
          (s, e)
       end
@@ -406,14 +406,14 @@ val cases =
    ) ::
    (
       let val s = "var p = (1,3); fun f(Int x, Int y) = x - y; f(p)";
-          val e = "-2 : Int"
+          val e = "~2 : Int"
       in
          (s, e)
       end
    ) ::
    (
       let val s = "fun f(Int x, Int y, Int z) = x - y * z ; f(5,4,2)";
-          val e = "-3 : Int"
+          val e = "~3 : Int"
       in
          (s, e)
       end
